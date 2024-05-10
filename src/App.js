@@ -1,44 +1,31 @@
-import React, { useState } from 'react';
-import { Button, Container, Divider, Input, TextArea } from '@lucid-ui/core';
-import { Card, CardBody, CardHeader } from '@lucid-ui/card';
+import React, { useState } from "react";
+import { Container, Typography } from "@mui/material";
+import UploadForm from "./components/UploadForm";
+import ActionButton from "./components/ActionButton";
+import CalculationData from "./components/CalculationData";
 
-export default function App()  {
+export default function App() {
   const [file, setFile] = useState(null);
-  const [data, setData] = useState(null);
+  const [calculationData, setCalculationData] = useState([]);
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
 
-  const handleSubmit = () => {
-    // Make API call to send file to backend for processing
-    // Update 'data' state with calculation results
+  const handleAction = () => {
+    // Implement action logic here
+    // For now, let's just display a placeholder result
+    setCalculationData(["Result 1", "Result 2", "Result 3"]);
   };
 
   return (
-    <Container maxWidth="lg" paddingY={6}>
-      <Card>
-        <CardHeader>
-          <h2>PDF Processing App</h2>
-        </CardHeader>
-        <CardBody>
-          <Input type="file" onChange={handleFileChange} />
-          <Divider marginY={4} />
-          <Button onClick={handleSubmit}>Process PDF</Button>
-        </CardBody>
-      </Card>
-
-      {data && (
-        <Card marginTop={4}>
-          <CardHeader>
-            <h3>Calculation Results</h3>
-          </CardHeader>
-          <CardBody>
-            <TextArea readOnly value={data} rows={8} />
-          </CardBody>
-        </Card>
-      )}
+    <Container>
+      <Typography variant="h4" component="h1" align="center" mt={4}>
+        PDF Analysis App
+      </Typography>
+      <UploadForm onFileChange={handleFileChange} />
+      <ActionButton onClick={handleAction} />
+      <CalculationData data={calculationData} />
     </Container>
   );
-};
-
+}

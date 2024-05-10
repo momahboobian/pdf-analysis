@@ -1,7 +1,11 @@
+import { Box, Button } from '@mui/material';
+
 export default function  ActionButton  ({ onClick }) {
-  return (
-    <div>
-      <button onClick={onClick}>Perform Action</button>
-    </div>
-  );
+return (
+    <Box mt={2}>
+        <Button variant="contained" onClick={onClick}>
+        Perform Action
+        </Button>
+    </Box>
+    );
 };
