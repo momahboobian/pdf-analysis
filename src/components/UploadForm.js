@@ -1,7 +1,4 @@
-// UploadForm.js
-import React from 'react';
-
-const UploadForm = ({ onFileChange }) => {
+export default function UploadForm ({ onFileChange }) {
   return (
     <div>
       <input type="file" onChange={onFileChange} />
@@ -9,4 +6,3 @@ const UploadForm = ({ onFileChange }) => {
   );
 };
 
-export default UploadForm;
