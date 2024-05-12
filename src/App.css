@@ -36,3 +36,23 @@
     transform: rotate(360deg);
   }
 }
+
+.table {
+  min-width: 650px;
+}
+
+.tableHead {
+  background-color: #dcffff;
+}
+
+.tableHeadCell {
+  font-weight: bold;
+}
+
+.tableBodyRow:nth-of-type(odd) {
+  background-color: #f2f2f2;
+}
+
+.tableFooterRow {
+  background-color: #dcffff;
+}
