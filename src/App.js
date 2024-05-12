@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -13,25 +13,29 @@ import {
   TableCell,
   Paper,
   Button,
-  CircularProgress, // Import CircularProgress for the loading spinner
+  CircularProgress,
 } from "@mui/material";
 
 import "./App.css";
 
 export default function App() {
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
   const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [folderEmpty, setFolderEmpty] = useState(true);
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const selectedFiles = Array.from(e.target.files);
+    setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
   };
 
   const handleUpload = () => {
-    if (!file) {
+    if (files.length === 0) {
       toast.error("Please select a file to upload.");
       return;
     }
+
+    setLoading(true);
 
     // Check if the upload folder is empty
     axios
@@ -39,13 +43,18 @@ export default function App() {
       .then((res) => {
         // Proceed with the upload, including sending the confirmation to the backend
         const formData = new FormData();
-        formData.append("file", file);
-
+        files.forEach((file) => {
+          formData.append("files[]", file);
+        });
         axios
-          .post("http://localhost:5000/upload", formData)
+          .post("http://localhost:5000/upload", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          })
           .then((res) => {
-            toast.success("File uploaded successfully.");
-            setFile(null); // Clear file input after successful upload
+            toast.success("All files uploaded successfully.");
+            setFiles([]); // Clear file input after successful upload
           })
           .catch((err) => {
             if (err.response && err.response.data) {
@@ -54,12 +63,19 @@ export default function App() {
               console.error("Error uploading file:", err.message);
               toast.error("An error occurred while uploading the file.");
             }
-          });
+          })
+          .finally(() => setLoading(false));
       })
       .catch((err) => {
         console.error("Error checking folder status:", err.message);
         toast.error("An error occurred while checking the folder status.");
       });
+  };
+
+  const handleDeleteFile = (index) => {
+    const updatedFiles = [...files];
+    updatedFiles.splice(index, 1);
+    setFiles(updatedFiles);
   };
 
   const handleAction = () => {
@@ -73,6 +89,10 @@ export default function App() {
       .catch((err) => {
         if (err.response && err.response.data) {
           toast.error(err.response.data.error);
+          console.error(
+            "An error occurred while performing the action:",
+            err.message
+          );
         } else {
           toast.error(
             "An error occurred while performing the action." + err.message
@@ -109,60 +129,112 @@ export default function App() {
         align="center"
         mt={4}
       >
-        PDF Analysis App
+        PDF Invoice Analysis App
       </Typography>
-      <input type="file" onChange={handleFileChange} />
-      <Button variant="contained" onClick={handleUpload}>
-        Upload
-      </Button>
 
-      <Button variant="contained" onClick={handleAction}>
-        Action
-      </Button>
+      {folderEmpty ? (
+        <Button variant="contained" onClick={handleEmptyFolder}>
+          Start by emptying the folder
+        </Button>
+      ) : (
+        <>
+          <div className="file-upload-container">
+            <input
+              type="file"
+              id="file-upload"
+              className="file-upload-input"
+              onChange={handleFileChange}
+              multiple
+            />
+            <label htmlFor="file-upload">
+              <Button variant="contained" component="span">
+                Choose Files
+              </Button>
+            </label>
+            <Button variant="contained" onClick={handleUpload}>
+              Upload
+            </Button>
+          </div>
 
-      <Button variant="contained" onClick={handleEmptyFolder}>
-        Empty Folder
-      </Button>
+          {files.length > 0 && (
+            <div
+              className="selected-files-container"
+              data-count={`${files.length} files selected`}
+            >
+              {files.map((file, index) => (
+                <div key={index} className="selected-file">
+                  <Typography variant="body1" className="file-name">
+                    {file.name}
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => handleDeleteFile(index)}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
 
-      <Typography
-        variant="body1"
-        color="error"
-        align="center"
-        mt={2}
-      ></Typography>
+          <Button variant="contained" onClick={handleAction}>
+            Action
+          </Button>
 
-      {loading && <CircularProgress style={{ margin: "20px auto" }} />}
+          <Button variant="contained" onClick={handleEmptyFolder}>
+            Empty Folder
+          </Button>
 
-      {response && (
-        <TableContainer component={Paper} className="table">
-          <Table>
-            <TableHead className="tableHead">
-              <TableRow>
-                <TableCell className="tableHeadCell">Site Name</TableCell>
-                <TableCell className="tableHeadCell">Total</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {response &&
-                Object.entries(response.grand_totals).map(([site, total]) => (
-                  <TableRow key={site} className="tableBodyRow">
-                    <TableCell>{site}</TableCell>
-                    <TableCell>{total}</TableCell>
+          <Typography
+            variant="body1"
+            color="error"
+            align="center"
+            mt={4}
+          ></Typography>
+
+          {loading && (
+            <div className="loading-container">
+              <Typography variant="body1" className="loading-prompt">
+                Files are in process...
+              </Typography>
+              <CircularProgress className="loading-spinner" />
+            </div>
+          )}
+          {response && !loading && (
+            <TableContainer component={Paper} className="table">
+              <Table>
+                <TableHead className="tableHead">
+                  <TableRow>
+                    <TableCell className="tableHeadCell">Site Name</TableCell>
+                    <TableCell className="tableHeadCell">Total</TableCell>
                   </TableRow>
-                ))}
-              {response && response.overall_grand_total && (
-                <TableRow className="tableFooterRow">
-                  <TableCell>
-                    <strong>Overall Grand Total</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>{response.overall_grand_total}</strong>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {response &&
+                    Object.entries(response.grand_totals).map(
+                      ([site, total]) => (
+                        <TableRow key={site} className="tableBodyRow">
+                          <TableCell>{site}</TableCell>
+                          <TableCell>{total}</TableCell>
+                        </TableRow>
+                      )
+                    )}
+                  {response && response.overall_grand_total && (
+                    <TableRow className="tableFooterRow">
+                      <TableCell>
+                        <strong>Overall Grand Total</strong>
+                      </TableCell>
+                      <TableCell>
+                        <strong>{response.overall_grand_total}</strong>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </>
       )}
     </Container>
   );

@@ -56,3 +56,57 @@
 .tableFooterRow {
   background-color: #dcffff;
 }
+
+.file-upload-container {
+  margin-bottom: 20px;
+}
+
+.file-upload-input {
+  display: none;
+}
+
+.selected-files-container {
+  position: relative;
+  max-width: 800px;
+  max-height: 330px;
+  overflow: auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-top: 10px;
+  margin: auto;
+}
+
+.selected-files-container::after {
+  content: attr(data-count);
+  position: absolute;
+  top: 0;
+  right: 40%;
+  background-color: #007bff;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  z-index: 1;
+}
+
+.selected-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  white-space: nowrap;
+  margin-bottom: 10px;
+  padding: 2px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-name {
+  margin-right: 10px;
+}
+
+loading-prompt {
+  font-size: 20px;
+  font-weight: bold;
+}
