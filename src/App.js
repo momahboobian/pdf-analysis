@@ -23,10 +23,25 @@ export default function App() {
   const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false);
   const [folderEmpty, setFolderEmpty] = useState(true);
+  const [uploadCompleted, setUploadCompleted] = useState(false);
+  const [newJob, setNewJob] = useState(false);
+
+  useEffect(() => {
+    // Check if the upload folder is empty on initial load
+    axios
+      .get("http://localhost:5000/check-folder")
+      .then((res) => {
+        setFolderEmpty(res.data.folder_empty);
+      })
+      .catch((err) => {
+        console.error("Error checking folder status:", err.message);
+        toast.error("An error occurred while checking the folder status.");
+      });
+  }, []);
 
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
-    setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
+    setFiles(selectedFiles);
   };
 
   const handleUpload = () => {
@@ -36,6 +51,12 @@ export default function App() {
     }
 
     setLoading(true);
+
+    // Proceed with the upload
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append("files", file);
+    });
 
     // Check if the upload folder is empty
     axios
@@ -54,7 +75,8 @@ export default function App() {
           })
           .then((res) => {
             toast.success("All files uploaded successfully.");
-            setFiles([]); // Clear file input after successful upload
+            setFiles([]);
+            setUploadCompleted(true);
           })
           .catch((err) => {
             if (err.response && err.response.data) {
@@ -85,6 +107,7 @@ export default function App() {
       .then((res) => {
         const responseData = res.data[0];
         setResponse(responseData);
+        setNewJob(true);
       })
       .catch((err) => {
         if (err.response && err.response.data) {
@@ -94,9 +117,7 @@ export default function App() {
             err.message
           );
         } else {
-          toast.error(
-            "An error occurred while performing the action." + err.message
-          );
+          toast.error("An error occurred while performing the action.");
         }
       })
       .finally(() => setLoading(false));
@@ -107,15 +128,12 @@ export default function App() {
       .post("http://localhost:5000/empty", { confirmation: true })
       .then((res) => {
         toast.success(res.data.message);
+        setFolderEmpty(true);
+        setUploadCompleted(false);
       })
       .catch((err) => {
-        if (err.response && err.response.data) {
-          toast.error(err.response.data.error);
-        } else {
-          toast.error(
-            "An error occurred while emptying the folder." + err.message
-          );
-        }
+        console.error("Error emptying the folder:", err.message);
+        toast.error("An error occurred while emptying the folder.");
       });
   };
 
@@ -132,29 +150,31 @@ export default function App() {
         PDF Invoice Analysis App
       </Typography>
 
-      {folderEmpty ? (
+      {!folderEmpty ? (
         <Button variant="contained" onClick={handleEmptyFolder}>
           Start by emptying the folder
         </Button>
       ) : (
         <>
-          <div className="file-upload-container">
-            <input
-              type="file"
-              id="file-upload"
-              className="file-upload-input"
-              onChange={handleFileChange}
-              multiple
-            />
-            <label htmlFor="file-upload">
-              <Button variant="contained" component="span">
-                Choose Files
+          {!uploadCompleted && (
+            <div className="file-upload-container">
+              <input
+                type="file"
+                id="file-upload"
+                className="file-upload-input"
+                onChange={handleFileChange}
+                multiple
+              />
+              <label htmlFor="file-upload">
+                <Button variant="contained" component="span">
+                  Choose Files
+                </Button>
+              </label>
+              <Button variant="contained" onClick={handleUpload}>
+                Upload
               </Button>
-            </label>
-            <Button variant="contained" onClick={handleUpload}>
-              Upload
-            </Button>
-          </div>
+            </div>
+          )}
 
           {files.length > 0 && (
             <div
@@ -178,13 +198,18 @@ export default function App() {
             </div>
           )}
 
-          <Button variant="contained" onClick={handleAction}>
-            Action
-          </Button>
+          {files.length > 0 ||
+            (uploadCompleted && !newJob && (
+              <Button variant="contained" onClick={handleAction}>
+                Display the grand total of the sites
+              </Button>
+            ))}
 
-          <Button variant="contained" onClick={handleEmptyFolder}>
-            Empty Folder
-          </Button>
+          {uploadCompleted && newJob && (
+            <Button variant="contained" onClick={handleEmptyFolder}>
+              Start a new job
+            </Button>
+          )}
 
           <Typography
             variant="body1"
@@ -201,7 +226,8 @@ export default function App() {
               <CircularProgress className="loading-spinner" />
             </div>
           )}
-          {response && !loading && (
+
+          {response && !loading && uploadCompleted && (
             <TableContainer component={Paper} className="table">
               <Table>
                 <TableHead className="tableHead">
