@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -21,15 +21,17 @@ import "./App.css";
 export default function App() {
   const [files, setFiles] = useState([]);
   const [response, setResponse] = useState(null);
+  const [invoices, setInvoices] = useState([]);
+  const [selectInvoice, setSelectInvoice] = useState("");
   const [loading, setLoading] = useState(false);
   const [folderEmpty, setFolderEmpty] = useState(true);
   const [uploadCompleted, setUploadCompleted] = useState(false);
   const [newJob, setNewJob] = useState(false);
 
+  // Check if the upload folder is empty on initial load
   useEffect(() => {
-    // Check if the upload folder is empty on initial load
     axios
-      .get("http://localhost:5000/check-folder")
+      .get("http://127.0.0.1:5000/check-folder")
       .then((res) => {
         setFolderEmpty(res.data.folder_empty);
       })
@@ -52,15 +54,9 @@ export default function App() {
 
     setLoading(true);
 
-    // Proceed with the upload
-    const formData = new FormData();
-    files.forEach((file) => {
-      formData.append("files", file);
-    });
-
     // Check if the upload folder is empty
     axios
-      .get("http://localhost:5000/check-folder")
+      .get("http://127.0.0.1:5000/check-folder")
       .then((res) => {
         // Proceed with the upload, including sending the confirmation to the backend
         const formData = new FormData();
@@ -68,7 +64,7 @@ export default function App() {
           formData.append("files[]", file);
         });
         axios
-          .post("http://localhost:5000/upload", formData, {
+          .post("http://127.0.0.1:5000/upload", formData, {
             headers: {
               "Content-Type": "multipart/form-data",
             },
@@ -103,10 +99,16 @@ export default function App() {
   const handleAction = () => {
     setLoading(true);
     axios
-      .post("http://localhost:5000/action")
+      .post("http://127.0.0.1:5000/totals")
       .then((res) => {
         const responseData = res.data[0];
-        setResponse(responseData);
+
+        // setResponse(responseData);
+        setResponse(res.data);
+        const allInvoices = res.data.map(
+          (invoice) => invoice.calculation_results[0].invoice_number
+        );
+        setInvoices(allInvoices);
         setNewJob(true);
       })
       .catch((err) => {
@@ -123,9 +125,11 @@ export default function App() {
       .finally(() => setLoading(false));
   };
 
+  console.log(invoices);
+
   const handleEmptyFolder = () => {
     axios
-      .post("http://localhost:5000/empty", { confirmation: true })
+      .post("http://127.0.0.1:5000//empty", { confirmation: true })
       .then((res) => {
         toast.success(res.data.message);
         setFolderEmpty(true);
@@ -136,6 +140,19 @@ export default function App() {
         toast.error("An error occurred while emptying the folder.");
       });
   };
+
+  const handleInvoiceSelect = (event) => {
+    const selectedInvoice = event.target.value;
+    setSelectInvoice(selectedInvoice);
+  };
+
+  const filteredResponse = selectInvoice
+    ? response?.find((item) =>
+        item.calculation_results.some(
+          (result) => result.invoice_number === selectInvoice
+        )
+      )
+    : response?.[0];
 
   return (
     <Container className="App">
@@ -205,6 +222,24 @@ export default function App() {
               </Button>
             ))}
 
+          {response && (
+            <div className="invoice-select-container">
+              <label htmlFor="invoice-select">Select Invoice:</label>
+              <select
+                id="invoice-select"
+                value={selectInvoice}
+                onChange={handleInvoiceSelect}
+              >
+                <option value="">Grand Total (Default)</option>
+                {invoices.map((invoice) => (
+                  <option key={invoice} value={invoice}>
+                    {invoice}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {uploadCompleted && newJob && (
             <Button variant="contained" onClick={handleEmptyFolder}>
               Start a new job
@@ -227,34 +262,52 @@ export default function App() {
             </div>
           )}
 
-          {response && !loading && uploadCompleted && (
+          {filteredResponse && !loading && uploadCompleted && (
             <TableContainer component={Paper} className="table">
               <Table>
+                {/* Table header */}
                 <TableHead className="tableHead">
                   <TableRow>
                     <TableCell className="tableHeadCell">Site Name</TableCell>
                     <TableCell className="tableHeadCell">Total</TableCell>
                   </TableRow>
                 </TableHead>
+
+                {/* Table body */}
                 <TableBody>
-                  {response &&
-                    Object.entries(response.grand_totals).map(
-                      ([site, total]) => (
-                        <TableRow key={site} className="tableBodyRow">
-                          <TableCell>{site}</TableCell>
-                          <TableCell>{total}</TableCell>
+                  {/* Modify this part to render based on filteredResponse */}
+                  {selectInvoice === "" ? (
+                    // If no invoice selected, render overall grand total
+                    <>
+                      {Object.entries(filteredResponse.grand_totals).map(
+                        ([site, total]) => (
+                          <TableRow key={site} className="tableBodyRow">
+                            <TableCell>{site}</TableCell>
+                            <TableCell>{total}</TableCell>
+                          </TableRow>
+                        )
+                      )}
+                      <TableRow className="tableFooterRow">
+                        <TableCell>
+                          <strong>Overall Grand Total</strong>
+                        </TableCell>
+                        <TableCell>
+                          <strong>
+                            {filteredResponse.overall_grand_total}
+                          </strong>
+                        </TableCell>
+                      </TableRow>
+                    </>
+                  ) : (
+                    // If invoice selected, render site totals for that invoice
+                    filteredResponse.calculation_results[0].sites_total_results.map(
+                      (item) => (
+                        <TableRow key={item.site} className="tableBodyRow">
+                          <TableCell>{item.site}</TableCell>
+                          <TableCell>{item.total}</TableCell>
                         </TableRow>
                       )
-                    )}
-                  {response && response.overall_grand_total && (
-                    <TableRow className="tableFooterRow">
-                      <TableCell>
-                        <strong>Overall Grand Total</strong>
-                      </TableCell>
-                      <TableCell>
-                        <strong>{response.overall_grand_total}</strong>
-                      </TableCell>
-                    </TableRow>
+                    )
                   )}
                 </TableBody>
               </Table>
