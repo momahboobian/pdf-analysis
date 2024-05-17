@@ -13,6 +13,23 @@
   }
 }
 
+.Container {
+  margin-top: 20px;
+}
+
+.Toastify__toast {
+  font-size: 16px;
+}
+
+.MuiTable-root {
+  margin-top: 20px;
+}
+
+.MuiTypography-h4 {
+  margin-bottom: 20px;
+}
+
+/* ---------------------- */
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
