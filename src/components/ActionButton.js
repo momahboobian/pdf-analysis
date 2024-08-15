@@ -1,44 +1,84 @@
-import { useState } from "react";
-import { Button } from "@mui/material";
+import React, { useState } from 'react'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { Button } from '@mui/material'
 
-export default function ActionButton({
-  uploadCompleted,
-  newJob,
-  handleAction,
-  setNewJob,
-}) {
-  const [response, setResponse] = useState(null);
+export default function FileUpload({ files, setFiles, setUploadCompleted }) {
+  const [loading, setLoading] = useState(false)
 
-  const handleAction = () => {
-    setLoading(true);
+  const handleUpload = () => {
+    if (files.length === 0) {
+      toast.error('Please select a file to upload.')
+      return
+    }
+
+    setLoading(true)
+
+    // Proceed with the upload
+    const formData = new FormData()
+    files.forEach(file => {
+      formData.append('files', file)
+    })
+
+    // Check if the upload folder is empty
     axios
-      .post("http://localhost:5000/action")
-      .then((res) => {
-        const responseData = res.data[0];
-        setResponse(responseData);
-        setNewJob(true);
+      .get('https://pdf-analysis.moreel.me/api/check-folder')
+      .then(res => {
+        // Proceed with the upload, including sending the confirmation to the backend
+        const formData = new FormData()
+        files.forEach(file => {
+          formData.append('files[]', file)
+        })
+        axios
+          .post('https://pdf-analysis.moreel.me/api/upload', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          })
+          .then(res => {
+            toast.success('All files uploaded successfully.')
+            setFiles([])
+            setUploadCompleted(true)
+          })
+          .catch(err => {
+            if (err.response && err.response.data) {
+              toast.error(err.response.data.error)
+            } else {
+              console.error('Error uploading file:', err.message)
+              toast.error('An error occurred while uploading the file.')
+            }
+          })
+          .finally(() => setLoading(false))
       })
-      .catch((err) => {
-        if (err.response && err.response.data) {
-          toast.error(err.response.data.error);
-          console.error(
-            "An error occurred while performing the action:",
-            err.message
-          );
-        } else {
-          toast.error("An error occurred while performing the action.");
-        }
+      .catch(err => {
+        console.error('Error checking folder status:', err.message)
+        toast.error('An error occurred while checking the folder status.')
       })
-      .finally(() => setLoading(false));
-  };
+  }
+
+  const handleFileChange = e => {
+    const selectedFiles = Array.from(e.target.files)
+    setFiles(selectedFiles)
+  }
 
   return (
-    <div>
-      {uploadCompleted && !newJob && (
-        <Button variant="contained" onClick={handleAction}>
-          Display the grand total of the sites
+    <div className="file-upload-container">
+      <input
+        type="file"
+        id="file-upload"
+        className="file-upload-input"
+        onChange={handleFileChange}
+        multiple
+      />
+      <label htmlFor="file-upload">
+        <Button variant="contained" component="span">
+          Choose Files
         </Button>
-      )}
+      </label>
+      <Button variant="contained" onClick={handleUpload}>
+        Upload
+      </Button>
     </div>
-  );
+  )
 }

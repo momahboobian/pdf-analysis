@@ -1,67 +1,64 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { Button } from "@mui/material";
+import React, { useState } from 'react'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { Button } from '@mui/material'
 
-export default function FileUpload({ setUploadCompleted }) {
-  const [files, setFiles] = useState([]);
-  const [loading, setLoading] = useState(false);
+const FileUpload = ({ files, setFiles, setUploadCompleted }) => {
+  const [loading, setLoading] = useState(false)
 
-  const handleUpload = () => {
+  const handleFileChange = e => {
+    const selectedFiles = Array.from(e.target.files)
+    setFiles(selectedFiles)
+  }
+
+  const handleClearFolder = () => {
+    setLoading(true)
+    axios
+      .post('https://pdf-analysis.moreel.me/api/empty')
+      .then(res => {
+        toast.success('Folder cleared successfully.')
+        setFiles([])
+        setUploadCompleted(false) // Reset upload completed state
+      })
+      .catch(err => {
+        console.error('Error clearing the folder:', err.message)
+        toast.error('An error occurred while clearing the folder.')
+      })
+      .finally(() => setLoading(false))
+  }
+
+  const handleUpload = async () => {
     if (files.length === 0) {
-      toast.error("Please select a file to upload.");
-      return;
+      toast.error('Please select a file to upload.')
+      return
     }
 
-    setLoading(true);
+    setLoading(true)
 
-    // Proceed with the upload
-    const formData = new FormData();
-    files.forEach((file) => {
-      formData.append("files", file);
-    });
+    try {
+      const { data } = await axios.get('https://pdf-analysis.moreel.me/api/check-folder')
+      if (data.folder_empty) {
+        const formData = new FormData()
+        files.forEach(file => formData.append('files[]', file))
 
-    // Check if the upload folder is empty
-    axios
-      .get("http://localhost:5000/check-folder")
-      .then((res) => {
-        // Proceed with the upload, including sending the confirmation to the backend
-        const formData = new FormData();
-        files.forEach((file) => {
-          formData.append("files[]", file);
-        });
-        axios
-          .post("http://localhost:5000/upload", formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          })
-          .then((res) => {
-            toast.success("All files uploaded successfully.");
-            setFiles([]);
-            setUploadCompleted(true);
-          })
-          .catch((err) => {
-            if (err.response && err.response.data) {
-              toast.error(err.response.data.error);
-            } else {
-              console.error("Error uploading file:", err.message);
-              toast.error("An error occurred while uploading the file.");
-            }
-          })
-          .finally(() => setLoading(false));
-      })
-      .catch((err) => {
-        console.error("Error checking folder status:", err.message);
-        toast.error("An error occurred while checking the folder status.");
-      });
-  };
-
-  const handleFileChange = (e) => {
-    const selectedFiles = Array.from(e.target.files);
-    setFiles(selectedFiles);
-  };
+        axios.post('https://pdf-analysis.moreel.me/api/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+        toast.success('All files uploaded successfully.')
+        setFiles([])
+        setUploadCompleted(true)
+      } else {
+        toast.error('Upload folder is not empty. Please clear the folder and try again.')
+      }
+    } catch (error) {
+      toast.error(`Error: ${error.response?.data?.error || error.message}`)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="file-upload-container">
@@ -72,14 +69,21 @@ export default function FileUpload({ setUploadCompleted }) {
         onChange={handleFileChange}
         multiple
       />
+      <Button variant="contained" onClick={handleClearFolder} disabled={loading}>
+        {loading ? 'Clearing Folder...' : 'Clear Folder'}
+      </Button>
+
       <label htmlFor="file-upload">
         <Button variant="contained" component="span">
           Choose Files
         </Button>
       </label>
-      <Button variant="contained" onClick={handleUpload}>
-        Upload
+
+      <Button variant="contained" onClick={handleUpload} disabled={loading}>
+        {loading ? 'Uploading...' : 'Upload'}
       </Button>
     </div>
-  );
+  )
 }
+
+export default FileUpload
