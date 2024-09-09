@@ -1,0 +1,16 @@
+.invoice-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  &__title {
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  &__content {
+    padding: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+  }
+}
