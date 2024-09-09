@@ -11,7 +11,7 @@ const Button: React.FC<ButtonProps> = ({ icon, title, color, disabled, onClick }
         background: disabled ? '#CCCCCC' : color,
       }}
       disabled={disabled}
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
     >
       <div className="custom-btn__icon">{icon}</div>
       <div className="custom-btn__title">{title}</div>

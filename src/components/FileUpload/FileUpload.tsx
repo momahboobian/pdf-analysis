@@ -1,12 +1,18 @@
 import React, { useState } from 'react'
-import axios from 'axios'
 import { toast } from 'react-toastify'
 
 import Button from '../ui/Button/Button'
 import { Icons } from '../ui/Icons/Icons'
+import {
+  FileUploadProps,
+  CheckFolderResponse,
+  UploadResponse,
+  CalculationResponse,
+} from '../../types'
+import { getRequest, postRequest } from '../../services/api'
 import './FileUpload.scss'
 
-const FileUpload: React.FC = () => {
+const FileUpload: React.FC<FileUploadProps> = () => {
   const [files, setFiles] = useState<File[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [uploadCompleted, setUploadCompleted] = useState<boolean>(false)
@@ -16,33 +22,16 @@ const FileUpload: React.FC = () => {
     setFiles(selectedFiles)
   }
 
-  function isError(err: unknown): err is Error {
-    return err instanceof Error
-  }
-
   const handleClearFolder = async () => {
-    setLoading(true)
-    try {
-      await axios.post('https://pdf-analysis.moreel.me/api/empty')
+    const response = await postRequest<UploadResponse>('/empty', {})
+    if (response.success) {
       toast.success('Folder cleared successfully.')
       setFiles([])
       setUploadCompleted(false)
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        // Handle Axios-specific errors
-        console.error('Error clearing the folder:', err.response?.data?.error || err.message)
-        toast.error('An error occurred while clearing the folder.')
-      } else if (isError(err)) {
-        // Handle general errors
-        console.error('Error clearing the folder:', err.message)
-        toast.error('An error occurred while clearing the folder.')
-      } else {
-        console.error('Unexpected error:', err)
-        toast.error('An unexpected error occurred.')
-      }
-    } finally {
-      setLoading(false)
+    } else {
+      toast.error(response.message || 'Failed to clear folder.')
     }
+    setLoading(false)
   }
 
   const handleUpload = async () => {
@@ -52,49 +41,56 @@ const FileUpload: React.FC = () => {
     }
 
     setLoading(true)
+    const folderStatus = await getRequest<CheckFolderResponse>('/check-folder')
+    if (folderStatus.success && folderStatus.data?.folder_empty) {
+      const formData = new FormData()
+      files.forEach(file => formData.append('files[]', file))
 
-    try {
-      const { data } = await axios.get('https://pdf-analysis.moreel.me/api/check-folder')
-      if (data.folder_empty) {
-        const formData = new FormData()
-        files.forEach(file => formData.append('files[]', file))
-
-        await axios.post('https://pdf-analysis.moreel.me/api/upload', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        })
-
+      const uploadResponse = await postRequest<UploadResponse>('/upload', formData)
+      if (uploadResponse.success) {
         toast.success('All files uploaded successfully.')
         setFiles([])
         setUploadCompleted(true)
       } else {
-        toast.error('Upload folder is not empty. Please clear the folder and try again.')
+        toast.error(uploadResponse.message || 'File upload failed.')
       }
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        // Handle Axios-specific errors
-        toast.error(`Error: ${error.response?.data?.error || error.message}`)
-      } else if (isError(error)) {
-        // Handle general errors
-        toast.error(`Error: ${error.message}`)
-      } else {
-        // Handle unexpected errors
-        toast.error('An unexpected error occurred.')
-      }
-    } finally {
-      setLoading(false)
+    } else {
+      toast.error('Upload folder is not empty. Please clear the folder and try again.')
     }
+    setLoading(false)
   }
 
   const handleChooseFiles = async () => {
     await handleClearFolder()
-    document.getElementById('file-upload')?.click()
+    setTimeout(() => {
+      document.getElementById('file-upload')?.click()
+    }, 500)
+  }
+
+  const handleStartCalculation = async () => {
+    if (!uploadCompleted) {
+      toast.error('Please complete the file upload before starting the calculation.')
+      return
+    }
+
+    setLoading(true)
+    const folderStatus = await getRequest<CheckFolderResponse>('/check-folder')
+    if (folderStatus.success) {
+      const response = await getRequest<CalculationResponse>('/totals')
+      if (response.success) {
+        toast.success('Calculation started successfully.')
+      } else {
+        toast.error(response.message || 'Failed to start calculation.')
+      }
+    } else {
+      toast.error('Upload folder is empty. Please upload files and try again.')
+    }
+    setLoading(false)
   }
 
   return (
     <div className="file-upload">
-      <div className="file-upload__header">
-        <h3>Start Here</h3>
-      </div>
+      <div className="file-upload__header">Start Here</div>
       <div className="file-upload__actions">
         <input
           type="file"
@@ -109,8 +105,19 @@ const FileUpload: React.FC = () => {
           onClick={handleChooseFiles}
         />
         <div className="file-upload__file-list">
-          {files.length === 0 ? (
-            <div className="file-upload__file-placeholder">You have no files selected.</div>
+          {loading && (
+            <div className="file-upload__spinner">
+              {Icons.spinner({ className: 'file-upload__icon-spinner' })}
+            </div>
+          )}
+
+          {uploadCompleted && files.length === 0 ? (
+            <div className="file-upload__file-placeholder">
+              All files have been uploaded successfully. Start the calculation by clicking on the
+              START CALCULATION button.
+            </div>
+          ) : files.length === 0 ? (
+            <div className="file-upload__file-placeholder">You have no files selected...</div>
           ) : (
             <div className="file-upload__file-list-content">
               {files.map((file, index) => (
@@ -124,23 +131,22 @@ const FileUpload: React.FC = () => {
         <div className="file-upload__upload-clear">
           <Button
             icon={Icons.upload({ className: 'file-upload__icon' })}
-            title={loading ? 'Uploading...' : 'Upload'}
-            disabled={loading}
+            title="Upload"
             onClick={handleUpload}
           />
           <Button
             icon={Icons.clear({ className: 'file-upload__icon' })}
-            title={loading ? 'Clearing Folder...' : 'Clear Files'}
-            color="#CCCCCC"
-            disabled={loading}
+            title="Clear Files"
             onClick={() => setFiles([])}
+            disabled={files.length === 0}
           />
         </div>
       </div>
       <Button
         icon={Icons.action({ className: 'file-upload__icon' })}
         title="Start Calculation"
-        onClick={() => console.log('Start Calculation')}
+        onClick={handleStartCalculation}
+        disabled={loading || (!uploadCompleted && files.length === 0)}
       />
     </div>
   )
