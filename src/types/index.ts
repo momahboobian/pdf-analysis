@@ -3,6 +3,7 @@ export interface ButtonProps {
   title: string
   color?: string
   disabled?: boolean
+  onClick?: () => void
 }
 
 export interface InvoiceData {

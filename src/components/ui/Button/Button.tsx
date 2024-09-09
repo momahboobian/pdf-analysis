@@ -3,7 +3,7 @@ import { ButtonProps } from '../../../types'
 
 import './Button.scss'
 
-const Button: React.FC<ButtonProps> = ({ icon, title, color, disabled }) => {
+const Button: React.FC<ButtonProps> = ({ icon, title, color, disabled, onClick }) => {
   return (
     <button
       className={`custom-btn ${disabled ? 'custom-btn__disabled' : ''}`}
@@ -11,6 +11,7 @@ const Button: React.FC<ButtonProps> = ({ icon, title, color, disabled }) => {
         background: disabled ? '#CCCCCC' : color,
       }}
       disabled={disabled}
+      onClick={onClick}
     >
       <div className="custom-btn__icon">{icon}</div>
       <div className="custom-btn__title">{title}</div>
