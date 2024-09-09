@@ -1,3 +1,10 @@
+export interface ButtonProps {
+  icon?: React.ReactNode
+  title: string
+  color?: string
+  disabled?: boolean
+}
+
 export interface InvoiceData {
   [key: string]: number
 }

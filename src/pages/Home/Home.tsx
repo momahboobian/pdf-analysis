@@ -1,11 +1,18 @@
 import React from 'react'
 
+import InvoiceSection from '../../components/InvoiceSection/InvoiceSection'
+import FileUpload from '../../components/FileUpload/FileUpload'
 import './Home.scss'
 
 const Home: React.FC = () => {
   return (
     <div className="home">
-      <h1 className="home__title">Welcome to the Home Page</h1>
+      <div className="home__file-upload">
+        <FileUpload />
+      </div>
+      <div className="home__invoice-section">
+        <InvoiceSection />
+      </div>
     </div>
   )
 }

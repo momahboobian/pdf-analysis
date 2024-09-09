@@ -1,11 +1,17 @@
 .home {
-  &__title {
-    font-size: 32px;
-    font-weight: 700;
-    padding: 0 100px;
+  display: flex;
+  gap: 20px;
+  width: 100%;
 
-    @media (max-width: 991px) {
-      padding: 0 20px;
-    }
+  &__file-upload {
+    flex: 1;
+  }
+
+  &__invoice-section {
+    flex: 2;
+  }
+
+  @media (max-width: 991px) {
+    // padding: 0 20px;
   }
 }
