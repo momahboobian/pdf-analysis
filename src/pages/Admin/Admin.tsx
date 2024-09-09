@@ -6,7 +6,6 @@ import './Admin.scss'
 const Admin: React.FC = () => {
   return (
     <div className="admin">
-      <Header />
       <h1>Admin Panel</h1>
     </div>
   )

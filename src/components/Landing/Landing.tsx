@@ -1,19 +1,26 @@
 import React from 'react'
+import { useLocation } from 'react-router-dom'
+
 import Header from '../Header/Header'
+import InfoBar from '../InfoBar/InfoBar'
 import './Landing.scss'
 
-const Landing: React.FC = () => {
+interface LandingProps {
+  children: React.ReactNode
+}
+
+const Landing: React.FC<LandingProps> = ({ children }) => {
+  const location = useLocation()
   return (
     <div className="landing">
       <Header />
       <div className="landing__container">
-        <div className="landing__info-bar">
-          <img loading="lazy" src="https:" className="landing__img" alt="Info Icon" />
-          <div className="landing__title">
-            The app will refresh the data when opened or on changing tabs.
-          </div>
-        </div>
-        {/* Add the rest of the layout here */}
+        <InfoBar />
+        {location.pathname === '/' ? (
+          <div className="landing__home-content">{children}</div>
+        ) : location.pathname === '/admin' ? (
+          <div className="landing__admin-content">{children}</div>
+        ) : null}
       </div>
     </div>
   )
