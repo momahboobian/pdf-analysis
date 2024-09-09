@@ -1,0 +1,30 @@
+.header {
+  display: flex;
+  justify-content: start;
+  flex-direction: column;
+  color: rgba(255, 255, 255, 1);
+  background-color: rgba(0, 80, 89, 1);
+  padding: 15px 0;
+  gap: 15px;
+
+  &__container {
+    padding: 0 6rem;
+    border-bottom: 1px solid rgba(221, 221, 221, 0.2);
+  }
+
+  &__logo {
+    min-height: 39px;
+    width: 100%;
+    font-size: 32px;
+    font-weight: 700;
+    padding: 0.7rem 0;
+  }
+
+  &__img {
+    aspect-ratio: 1000;
+    object-fit: contain;
+    object-position: center;
+    width: 100%;
+    margin-top: 15px;
+  }
+}

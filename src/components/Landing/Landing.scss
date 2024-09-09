@@ -1,0 +1,30 @@
+.landing {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background-color: rgba(210, 233, 221, 1);
+
+  &__container {
+  }
+
+  &__info-bar {
+    border-radius: 5px;
+    display: flex;
+    width: 100%;
+    gap: 10px;
+    color: rgba(26, 116, 125, 1);
+    flex-wrap: wrap;
+    padding: 15px 13px;
+    font: 500 16px Inter, sans-serif;
+  }
+
+  &__img {
+    aspect-ratio: 0.04;
+    object-fit: contain;
+    object-position: center;
+    width: 1px;
+  }
+}
