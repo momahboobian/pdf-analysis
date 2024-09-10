@@ -1,50 +1,126 @@
-# React + TypeScript + Vite
+# Invoice Analysis App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An intuitive and user-friendly web app designed to help you upload, analyze, and visualize invoice data. This app provides a structured layout to help users easily manage file uploads, view invoice totals, and analyze invoice data across various sites.
 
-Currently, two official plugins are available:
+# Table of Contents
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+<!--ts-->
 
-## Expanding the ESLint configuration
+- [Features](#Features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Project Structure](#project-structure)
+- [Technologies Used](#technologies-used)
+- [Screenshots](#screenshots)
+- [Contributing](#contributing)
+- [License](#license)
+<!--ts-->
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+# Features
 
-- Configure the top-level `parserOptions` property like this:
+File Upload & Management: Upload invoice files and clear them with ease.
+Invoice Overview: Displays a summary of grand totals and site-specific totals.
+Dynamic Invoice Tabs: Navigate between invoice details by selecting tabs generated dynamically based on uploaded data.
+API Integration: Fetches invoice data from a backend API, displays results in a tabular format.
+Toast Notifications: Informative popups for actions like successful uploads and errors.
+Loading Spinner: Indicates progress while fetching data from the API.
+Reusability: The app is designed to promote reusability with shared components such as buttons and tables.
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+# Installation
+
+To set up the app locally, follow the steps below:
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/invoice-analysis-app.git
+cd invoice-analysis-app
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+2. Install dependencies:
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```bash
+npm install
 ```
+
+3. Start the development server:
+
+```bash
+npm run dev
+```
+
+4. Build for production:
+
+```bash
+npm run build
+```
+
+5. Run tests:
+
+```bash
+npm run test
+```
+
+# Usage
+
+1. Upload Invoice Files: Navigate to the home page and use the file upload section to upload invoice data.
+2. Start Calculation: Once files are uploaded, click on the Start Calculation button to analyze invoice data.
+3. View Results: Invoice data is displayed in the invoice section where you can toggle between a grand total and site-specific totals using the dynamically created tabs.
+
+# Project Structure
+
+Here's a quick overview of the folder structure:
+
+```
+src/
+│
+├── components/
+│   ├── FileUpload/        # Handles file uploads and management
+│   ├── InvoiceSection/    # Displays dynamic invoice data and tabs
+│   └── common/            # Shared components like Button, Table, etc.
+│
+├── pages/
+│   ├── Home/
+│   └── Admin/
+│
+├── services/              # API service for interacting with the backend
+│
+├── App.tsx                # Main entry point for the app
+├── index.tsx              # Renders the root of the React app
+└── ...
+```
+
+# Technologies Used
+
+React: For building the user interface.
+TypeScript: Ensures type safety and reduces bugs during development.
+Vite: For a faster and more efficient development setup.
+SCSS: Provides modular and reusable styles using the BEM convention.
+Axios: Handles API requests.
+Shadcn UI: A clean and flexible UI framework for building custom components.
+Vitest: For unit and integration testing.
+
+# Screenshots
+
+File Upload & Invoice Overview
+<img src="path_to_screenshot_1" alt="File Upload and Invoice Overview" width="600">
+Dynamic Invoice Tabs
+<img src="path_to_screenshot_2" alt="Dynamic Invoice Tabs" width="600">
+Invoice Data Table
+<img src="path_to_screenshot_3" alt="Invoice Data Table" width="600">
+
+# Contributing
+
+We welcome contributions to the project! Feel free to submit a pull request or report an issue.
+
+To contribute:
+
+1. Fork the repository.
+2. Create a new branch `(git checkout -b feature-branch-name)`.
+3. Commit your changes `(git commit -m 'Add new feature')`.
+4. Push to the branch `(git push origin feature-branch-name)`.
+5. Open a Pull Request.
+
+# License
+
+This project is licensed under the MIT License. See the LICENSE file for more details.
