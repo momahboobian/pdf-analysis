@@ -1,0 +1,92 @@
+.file-upload {
+  display: flex;
+  flex-direction: column;
+  color: #1a1a1a;
+  gap: 15px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  padding: 20px;
+  border-radius: 5px;
+
+  &__header {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 600;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgb(221, 221, 221);
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__input {
+    display: none;
+  }
+
+  &__file-list {
+    position: relative;
+    width: 94%;
+    height: 15rem;
+    max-height: 300px;
+    overflow: auto;
+    border: 1px solid rgba(0, 80, 89, 1);
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 14px;
+    color: rgba(0, 80, 89, 1);
+    background-color: rgba(239, 239, 239, 0.556);
+  }
+
+  &__spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  &__icon-spinner {
+    animation: spin 1s linear infinite;
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  &__file-list-content {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  &__file-item {
+    padding: 5px;
+    border-bottom: 1px solid rgba(0, 80, 89, 1);
+    font-size: 14px;
+    color: rgba(0, 80, 89, 1);
+  }
+
+  &__file-placeholder {
+    text-align: center;
+    color: rgba(0, 80, 89, 1);
+    font-style: italic;
+  }
+
+  &__upload-clear {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgb(221, 221, 221);
+  }
+}

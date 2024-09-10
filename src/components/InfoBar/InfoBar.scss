@@ -1,0 +1,27 @@
+.info-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 10px;
+  border-radius: 5px;
+  // width: 100%;
+  gap: 10px;
+  padding: 0 13px;
+  background-color: #f8f9fa;
+  color: rgba(26, 116, 125, 1);
+  border-left: 7px solid rgba(26, 116, 125, 1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+
+  &__icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    padding: 4px;
+    margin-right: 8px;
+  }
+
+  &__content {
+    font-size: 16px;
+    font-weight: 500;
+  }
+}

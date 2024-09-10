@@ -1,0 +1,18 @@
+.home {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+
+  &__file-upload {
+    flex: 1;
+  }
+
+  &__invoice-section {
+    flex: 2;
+    overflow: auto;
+  }
+
+  @media (max-width: 991px) {
+    // padding: 0 20px;
+  }
+}

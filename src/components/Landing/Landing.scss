@@ -1,0 +1,15 @@
+.landing {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden;
+  background-color: rgba(210, 233, 221, 1);
+  gap: 25px;
+
+  &__container {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    padding: 0 6rem;
+  }
+}
