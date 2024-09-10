@@ -1,18 +1,41 @@
 .home {
   display: flex;
+  flex-direction: column;
   gap: 20px;
   width: 100%;
+  padding: 0 20px;
 
-  &__file-upload {
-    flex: 1;
+  &__file-upload,
+  &__invoice-section {
+    width: 100%;
   }
 
-  &__invoice-section {
-    flex: 2;
-    overflow: auto;
+  @media (min-width: 992px) {
+    flex-direction: row;
+    padding: 0;
+
+    &__file-upload {
+      flex: 1;
+    }
+
+    &__invoice-section {
+      flex: 2;
+      overflow: auto;
+    }
   }
 
   @media (max-width: 991px) {
-    // padding: 0 20px;
+    padding: 0;
+    gap: 10px;
+
+    &__file-upload,
+    &__invoice-section {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+    gap: 15px;
   }
 }

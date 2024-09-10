@@ -11,5 +11,20 @@
     flex-direction: column;
     gap: 25px;
     padding: 0 6rem;
+
+    @media (max-width: 991px) {
+      padding: 0 3rem;
+    }
+
+    @media (max-width: 767px) {
+      padding: 0 1.5rem;
+      gap: 15px;
+    }
+  }
+
+  &__home-content,
+  &__admin-content {
+    width: 100%;
+    box-sizing: border-box;
   }
 }
