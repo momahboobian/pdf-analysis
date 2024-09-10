@@ -9,6 +9,7 @@
 
   &__invoice-section {
     flex: 2;
+    overflow: auto;
   }
 
   @media (max-width: 991px) {

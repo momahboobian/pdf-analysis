@@ -14,59 +14,108 @@
   }
 
   &__tabs {
+    padding: 4px 0;
     display: flex;
+    gap: 0.625rem;
     margin-bottom: 1rem;
+    overflow: auto;
+  }
+
+  &__tab-btn {
+    padding-right: 0.625rem;
+    border-right: 1px solid rgb(208, 208, 208);
+
+    &:last-child {
+      border-right: none;
+    }
   }
 
   &__icon {
-    margin-right: 0.5rem;
+    // Add any specific styles for icons if needed
   }
 
   &__separator {
-    border-top: 1px solid #ccc;
-    margin: 1rem 0;
+    border-top: 1px solid rgb(208, 208, 208);
+    margin: 0.625rem 0; // 2.5 * 0.25rem
+  }
+
+  &__details {
+    margin-bottom: 1rem; // space between separator and details
+  }
+
+  &__details-info {
+    font-size: 0.875rem; // text-sm
+    color: #4a4a4a; // text-gray-800
+
+    div {
+      margin-bottom: 0.5rem; // space between lines
+    }
+
+    strong {
+      font-weight: 600; // bold text for labels
+    }
   }
 
   &__content {
-    .invoice-section__table {
-      display: flex;
-      flex-direction: column;
-    }
+    display: flex;
+    flex-direction: column;
+  }
 
-    .invoice-section__table-header,
-    .invoice-section__table-footer {
-      display: flex;
-      justify-content: space-between;
-      font-weight: bold;
-      border-bottom: 1px solid #ccc;
-      padding: 0.5rem 0;
-    }
+  &__loading {
+    font-size: 0.875rem; // text-sm
+    color: #4a4a4a; // text-gray-800
+  }
 
-    .invoice-section__table-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.5rem 0;
-    }
+  &__table {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #d0d0d0; // border color for table
+    border-radius: 0.125rem; // rounded-sm
+    background-color: #f9fafb; // bg-slate-50
+    overflow: hidden;
+  }
 
-    .invoice-section__cell {
-      flex: 1;
-      text-align: center;
-    }
+  &__table-header {
+    display: flex;
+    background-color: #f1f5f9; // bg-slate-100
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: capitalize;
+  }
 
-    .invoice-section__footer-cell {
-      flex: 1;
-      text-align: center;
-    }
+  &__header-cell {
+    flex: 1;
+    padding: 0.625rem 0.5rem; // 2.5 * 0.25rem
+    background-color: #f1f5f9; // bg-slate-100
+    border-bottom: 1px solid #d0d0d0; // border color for header
+  }
 
-    .invoice-section__placeholder {
-      padding: 1rem;
-      text-align: center;
-      color: #666;
+  &__table-row {
+    display: flex;
+    border-bottom: 1px solid #d0d0d0; // border color for row
+  }
+
+  &__cell {
+    flex: 1;
+    padding: 0.625rem 0.5rem; // 2.5 * 0.25rem
+    background-color: #ffffff; // bg-white
+
+    &:nth-child(even) {
+      background-color: #f9fafb; // bg-slate-50
     }
   }
 
-  &__separator-2 {
-    border-top: 1px solid #ccc;
-    margin: 1rem 0;
+  &__table-footer {
+    display: flex;
+    background-color: #f1f5f9; // bg-slate-100
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: capitalize;
+  }
+
+  &__footer-cell {
+    flex: 1;
+    padding: 0.625rem 0.5rem; // 2.5 * 0.25rem
+    background-color: #f1f5f9; // bg-slate-100
   }
 }

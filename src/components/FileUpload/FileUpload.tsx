@@ -1,37 +1,25 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { toast } from 'react-toastify'
+
+import { FileUploadProps, CheckFolderResponse, UploadResponse } from '../../types'
+import { getRequest, postRequest } from '../../services/api'
 
 import Button from '../ui/Button/Button'
 import { Icons } from '../ui/Icons/Icons'
-import {
-  FileUploadProps,
-  CheckFolderResponse,
-  UploadResponse,
-  CalculationResponse,
-} from '../../types'
-import { getRequest, postRequest } from '../../services/api'
 import './FileUpload.scss'
 
-const FileUpload: React.FC<FileUploadProps> = () => {
-  const [files, setFiles] = useState<File[]>([])
-  const [loading, setLoading] = useState<boolean>(false)
-  const [uploadCompleted, setUploadCompleted] = useState<boolean>(false)
-
+const FileUpload: React.FC<FileUploadProps> = ({
+  files,
+  setFiles,
+  loading,
+  setLoading,
+  uploadCompleted,
+  setUploadCompleted,
+  onStartCalculation,
+}) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || [])
     setFiles(selectedFiles)
-  }
-
-  const handleClearFolder = async () => {
-    const response = await postRequest<UploadResponse>('/empty', {})
-    if (response.success) {
-      toast.success('Folder cleared successfully.')
-      setFiles([])
-      setUploadCompleted(false)
-    } else {
-      toast.error(response.message || 'Failed to clear folder.')
-    }
-    setLoading(false)
   }
 
   const handleUpload = async () => {
@@ -46,7 +34,7 @@ const FileUpload: React.FC<FileUploadProps> = () => {
       const formData = new FormData()
       files.forEach(file => formData.append('files[]', file))
 
-      const uploadResponse = await postRequest<UploadResponse>('/upload', formData)
+      const uploadResponse = await postRequest('/upload', formData)
       if (uploadResponse.success) {
         toast.success('All files uploaded successfully.')
         setFiles([])
@@ -61,32 +49,43 @@ const FileUpload: React.FC<FileUploadProps> = () => {
   }
 
   const handleChooseFiles = async () => {
-    await handleClearFolder()
+    const response = await postRequest<UploadResponse>('/empty', {})
+    if (response.success) {
+      toast.success('Folder cleared successfully.')
+      setFiles([])
+      setUploadCompleted(false)
+    } else {
+      toast.error(response.message || 'Failed to clear folder.')
+    }
+    setLoading(false)
     setTimeout(() => {
       document.getElementById('file-upload')?.click()
     }, 500)
   }
 
-  const handleStartCalculation = async () => {
-    if (!uploadCompleted) {
-      toast.error('Please complete the file upload before starting the calculation.')
-      return
-    }
+  // const handleStartCalculation = async () => {
+  //   if (!uploadCompleted) {
+  //     toast.error('Please complete the file upload before starting the calculation.')
+  //     return
+  //   }
 
-    setLoading(true)
-    const folderStatus = await getRequest<CheckFolderResponse>('/check-folder')
-    if (folderStatus.success) {
-      const response = await getRequest<CalculationResponse>('/totals')
-      if (response.success) {
-        toast.success('Calculation started successfully.')
-      } else {
-        toast.error(response.message || 'Failed to start calculation.')
-      }
-    } else {
-      toast.error('Upload folder is empty. Please upload files and try again.')
-    }
-    setLoading(false)
-  }
+  //   setLoading(true)
+  //   toast.info('Calculation started, please wait ...')
+  //   const folderStatus = await getRequest<CheckFolderResponse>('/check-folder')
+  //   if (folderStatus.success) {
+  //     const response = await getRequest<CalculationResponse>('/totals')
+  //     console.log(response)
+  //     if (response.success) {
+  //       onStartCalculation()
+  //       toast.success('Calculation completed successfully.')
+  //     } else {
+  //       toast.error(response.message || 'Failed to start calculation.')
+  //     }
+  //   } else {
+  //     toast.error('Upload folder is empty. Please upload files and try again.')
+  //   }
+  //   setLoading(false)
+  // }
 
   return (
     <div className="file-upload">
@@ -102,7 +101,7 @@ const FileUpload: React.FC<FileUploadProps> = () => {
         <Button
           icon={Icons.file({ className: 'file-upload__icon' })}
           title="Choose Files"
-          onClick={handleChooseFiles}
+          onClick={() => handleChooseFiles()}
         />
         <div className="file-upload__file-list">
           {loading && (
@@ -113,8 +112,7 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 
           {uploadCompleted && files.length === 0 ? (
             <div className="file-upload__file-placeholder">
-              All files have been uploaded successfully. Start the calculation by clicking on the
-              START CALCULATION button.
+              Uploaded Completed. Press START CALCULATION button.
             </div>
           ) : files.length === 0 ? (
             <div className="file-upload__file-placeholder">You have no files selected...</div>
@@ -145,7 +143,7 @@ const FileUpload: React.FC<FileUploadProps> = () => {
       <Button
         icon={Icons.action({ className: 'file-upload__icon' })}
         title="Start Calculation"
-        onClick={handleStartCalculation}
+        onClick={onStartCalculation}
         disabled={loading || (!uploadCompleted && files.length === 0)}
       />
     </div>

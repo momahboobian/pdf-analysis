@@ -7,31 +7,38 @@ export interface ButtonProps {
 }
 
 export interface InvoiceData {
-  [key: string]: number
+  [key: string]: number | string
 }
 
-export interface siteTotals {
-  [key: string]: {
-    site_totals: InvoiceData
-    total: number
-    invoice: {
-      payment_date: string
-      transaction_id: string
-    }
+export interface SiteTotal {
+  invoice: {
+    payment_date: string
+    transaction_id: string
+  }
+  site_totals: InvoiceData
+  total: string
+}
+
+export interface GrandTotals {
+  grand_totals: InvoiceData
+  total_of_grand_totals: string
+}
+
+export interface CalculationResponse {
+  grand_totals: GrandTotals
+  site_totals: {
+    [invoiceKey: string]: SiteTotal
   }
 }
 
-export interface ApiResponse {
-  grand_totals: {
-    grand_totals: InvoiceData
-    total_of_grand_totals: number
-  }
-  site_totals: siteTotals
+export interface InvoiceSectionProps {
+  invoiceData: CalculationResponse | null
+  loading: boolean
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T> {
   success: boolean
-  data?: T
+  data: T | undefined
   message?: string
 }
 
@@ -45,29 +52,16 @@ export interface UploadResponse {
 
 export interface FileUploadProps {
   files: File[]
-  setFiles: React.Dispatch<React.SetStateAction<File[]>>
-  setUploadCompleted: React.Dispatch<React.SetStateAction<boolean>>
+  setFiles: (files: File[]) => void
+  loading: boolean
+  setLoading: (loading: boolean) => void
+  uploadCompleted: boolean
+  setUploadCompleted: (uploadCompleted: boolean) => void
+  onStartCalculation: () => void
 }
 
-export interface GrandTotals {
-  [key: string]: string
-}
-
-export interface SiteTotals {
-  [key: string]: {
-    invoice: {
-      payment_date: string
-      transaction_id: string
-    }
-    site_totals: GrandTotals
-    total: string
-  }
-}
-
-export interface CalculationResponse {
-  grand_totals: {
-    grand_totals: GrandTotals
-    total_of_grand_totals: string
-  }
-  site_totals: SiteTotals
+export interface InvoiceTableProps {
+  headers: string[]
+  rows: { [key: string]: React.ReactNode }[]
+  footer?: { [key: string]: React.ReactNode }
 }

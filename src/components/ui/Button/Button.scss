@@ -16,13 +16,13 @@
   &:hover {
     background-color: rgb(26, 116, 125);
     color: rgba(255, 255, 255, 1);
-    box-shadow: 0 0 10px rgb(26, 116, 125);
+    box-shadow: 0 0 5px rgb(26, 116, 125);
   }
 
   &:active {
     background-color: rgba(0, 80, 89, 1);
     color: rgba(255, 255, 255, 1);
-    box-shadow: 0 0 10px rgba(0, 80, 89, 1);
+    box-shadow: 0 0 5px rgba(0, 80, 89, 1);
   }
 
   &:focus,
