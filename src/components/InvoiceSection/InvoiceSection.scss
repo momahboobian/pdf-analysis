@@ -37,11 +37,6 @@
     font-weight: 600;
   }
 
-  &__content {
-    display: flex;
-    flex-direction: column;
-  }
-
   &__loading {
     font-size: 0.875rem; // text-sm
     color: #4a4a4a; // text-gray-800
