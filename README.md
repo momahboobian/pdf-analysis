@@ -102,12 +102,17 @@ Vitest: For unit and integration testing.
 
 # Screenshots
 
-File Upload & Invoice Overview
-<img src="path_to_screenshot_1" alt="File Upload and Invoice Overview" width="600">
-Dynamic Invoice Tabs
-<img src="path_to_screenshot_2" alt="Dynamic Invoice Tabs" width="600">
-Invoice Data Table
-<img src="path_to_screenshot_3" alt="Invoice Data Table" width="600">
+- File Upload & Invoice Overview
+
+  <img src="public/screenshots/01.png" alt="File Upload and Invoice Overview" width="600">
+
+- Dynamic Invoice Tabs
+
+  <img src="public/screenshots/02.png" alt="Dynamic Invoice Tabs" width="600">
+
+- Invoice Data Table
+
+  <img src="public/screenshots/03.png" alt="Invoice Data Table" width="600">
 
 # Contributing
 
