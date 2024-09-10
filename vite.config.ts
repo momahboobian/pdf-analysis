@@ -4,7 +4,10 @@ import react from '@vitejs/plugin-react-swc'
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
-    port: 4200,
+    port: 3030,
+  },
+  preview: {
+    port: 3010,
   },
   plugins: [react()],
   base: '/',
