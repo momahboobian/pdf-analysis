@@ -4,35 +4,36 @@ import './InvoiceTable.scss'
 
 const InvoiceTable: React.FC<InvoiceTableProps> = ({ headers, rows, footer }) => {
   return (
-    <div className="table">
-      <div className="table__header">
-        {headers.map((header, index) => (
-          <div key={index} className="table__header-cell">
-            {header}
-          </div>
-        ))}
-      </div>
-      <div className="table__body">
-        {rows.map((row, index) => (
-          <div key={index} className="table__row">
-            {Object.values(row).map((cell, cellIndex) => (
-              <div key={cellIndex} className="table__cell">
-                {cell}
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-      {footer && (
-        <div className="table__footer">
-          {Object.entries(footer).map(([key, value]) => (
-            <div key={key} className="table__footer-cell">
-              {value}
-            </div>
+    <table className="invoice-table">
+      <thead>
+        <tr>
+          {headers.map((header, index) => (
+            <th key={index}>{header}</th>
           ))}
-        </div>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row, index) => (
+          <tr key={index}>
+            {Object.values(row).map((cell, cellIndex) => (
+              <td key={cellIndex}>{cell}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+      {footer && (
+        <tfoot>
+          <tr>
+            <td colSpan={headers.length - 1} className="invoice-table__footer-label">
+              Total:
+            </td>
+            <td className="invoice-table__footer-value">
+              {footer['Overall Grand Total'] || footer['Total']}
+            </td>
+          </tr>
+        </tfoot>
       )}
-    </div>
+    </table>
   )
 }
 

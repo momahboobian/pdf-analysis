@@ -34,7 +34,7 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({ invoiceData, loading })
         return (
           <>
             <div className="invoice-section__details">
-              <p>Grand Total: {invoiceData.grand_totals.total_of_grand_totals}</p>
+              <p>Grand Total</p>
             </div>
 
             <InvoiceTable

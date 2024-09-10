@@ -27,24 +27,14 @@
 
   &__separator {
     border-top: 1px solid rgb(208, 208, 208);
-    margin: 0.625rem 0; // 2.5 * 0.25rem
   }
 
   &__details {
-    margin-bottom: 1rem; // space between separator and details
-  }
-
-  &__details-info {
-    font-size: 0.875rem; // text-sm
-    color: #4a4a4a; // text-gray-800
-
-    div {
-      margin-bottom: 0.5rem; // space between lines
-    }
-
-    strong {
-      font-weight: 600; // bold text for labels
-    }
+    text-align: center;
+    font-size: 0.875rem;
+    color: #4a4a4a;
+    font-size: 1rem;
+    font-weight: 600;
   }
 
   &__content {
