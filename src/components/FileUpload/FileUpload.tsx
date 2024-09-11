@@ -1,8 +1,8 @@
 import React from 'react'
 import { toast } from 'react-toastify'
 
-import { FileUploadProps, CheckFolderResponse, UploadResponse } from '../../types'
-import { getRequest, postRequest } from '../../services/api'
+import { FileUploadProps } from '../../types'
+import { postRequest } from '../../services/api'
 
 import Button from '../ui/Button/Button'
 import { Icons } from '../ui/Icons/Icons'
@@ -11,17 +11,14 @@ import './FileUpload.scss'
 const FileUpload: React.FC<FileUploadProps> = ({
   files,
   setFiles,
+  folderName,
   loading,
   setLoading,
   uploadCompleted,
   setUploadCompleted,
   onStartCalculation,
+  onFileChange,
 }) => {
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(e.target.files || [])
-    setFiles(selectedFiles)
-  }
-
   const handleUpload = async () => {
     if (files.length === 0) {
       toast.error('Please select a file to upload.')
@@ -29,7 +26,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
     }
 
     setLoading(true)
-    const folderName = new Date().toISOString()
     const formData = new FormData()
     files.forEach(file => formData.append('files[]', file))
     formData.append('folder', folderName)
@@ -64,7 +60,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
           type="file"
           id="file-upload"
           className="file-upload__input"
-          onChange={handleFileChange}
+          onChange={onFileChange}
           multiple
         />
         <Button

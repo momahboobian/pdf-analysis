@@ -6,7 +6,12 @@ import { InvoiceSectionProps } from '../../types'
 import './InvoiceSection.scss'
 import InvoiceTable from '../InvoiceTable/InvoiceTable'
 
-const InvoiceSection: React.FC<InvoiceSectionProps> = ({ invoiceData, loading }) => {
+const InvoiceSection: React.FC<InvoiceSectionProps> = ({
+  invoiceData,
+  loading,
+  progress,
+  grandTotal,
+}) => {
   const [selectedTab, setSelectedTab] = React.useState<string>('GRAND TOTAL')
 
   const handleTabClick = (tab: string) => {
@@ -76,6 +81,8 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({ invoiceData, loading })
             title="Grand Total"
             onClick={() => handleTabClick('GRAND TOTAL')}
           />
+          <p>Progress: {progress}</p>
+          <p>Grand Total: {grandTotal}</p>
           {invoiceData &&
             Object.keys(invoiceData.site_totals).map((invoice, index) => {
               const siteTotal = invoiceData.site_totals[invoice]
