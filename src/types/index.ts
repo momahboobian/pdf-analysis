@@ -34,6 +34,7 @@ export interface CalculationResponse {
 export interface InvoiceSectionProps {
   invoiceData: CalculationResponse | null
   loading: boolean
+  socketData: SocketData | null
 }
 
 export interface ApiResponse<T> {
@@ -53,15 +54,28 @@ export interface UploadResponse {
 export interface FileUploadProps {
   files: File[]
   setFiles: (files: File[]) => void
+  folderName: string
   loading: boolean
   setLoading: (loading: boolean) => void
   uploadCompleted: boolean
   setUploadCompleted: (uploadCompleted: boolean) => void
   onStartCalculation: () => void
+  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 export interface InvoiceTableProps {
   headers: string[]
   rows: { [key: string]: React.ReactNode }[]
   footer?: { [key: string]: React.ReactNode }
+}
+
+export interface SocketData {
+  file: string
+  site_totals: SiteTotal
+  total: number
+  progress: number
+  invoice: {
+    payment_date: string
+    transaction_id: string
+  }
 }
