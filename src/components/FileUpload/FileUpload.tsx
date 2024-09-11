@@ -29,63 +29,32 @@ const FileUpload: React.FC<FileUploadProps> = ({
     }
 
     setLoading(true)
-    const folderStatus = await getRequest<CheckFolderResponse>('/check-folder')
-    if (folderStatus.success && folderStatus.data?.folder_empty) {
-      const formData = new FormData()
-      files.forEach(file => formData.append('files[]', file))
+    const folderName = new Date().toISOString()
+    const formData = new FormData()
+    files.forEach(file => formData.append('files[]', file))
+    formData.append('folder', folderName)
 
-      const uploadResponse = await postRequest('/upload', formData)
-      if (uploadResponse.success) {
-        toast.success('All files uploaded successfully.')
-        setFiles([])
-        setUploadCompleted(true)
-      } else {
-        toast.error(uploadResponse.message || 'File upload failed.')
-      }
+    setLoading(true)
+    const uploadResponse = await postRequest('/upload', formData)
+    if (uploadResponse.success) {
+      toast.success('All files uploaded successfully.')
+      setFiles([])
+      setUploadCompleted(true)
     } else {
-      toast.error('Upload folder is not empty. Please clear the folder and try again.')
+      toast.error(uploadResponse.message || 'File upload failed.')
     }
+
     setLoading(false)
   }
 
   const handleChooseFiles = async () => {
-    const response = await postRequest<UploadResponse>('/empty', {})
-    if (response.success) {
-      toast.success('Folder cleared successfully.')
-      setFiles([])
-      setUploadCompleted(false)
-    } else {
-      toast.error(response.message || 'Failed to clear folder.')
-    }
+    setFiles([])
+    setUploadCompleted(false)
     setLoading(false)
     setTimeout(() => {
       document.getElementById('file-upload')?.click()
     }, 500)
   }
-
-  // const handleStartCalculation = async () => {
-  //   if (!uploadCompleted) {
-  //     toast.error('Please complete the file upload before starting the calculation.')
-  //     return
-  //   }
-
-  //   setLoading(true)
-  //   toast.info('Calculation started, please wait ...')
-  //   const folderStatus = await getRequest<CheckFolderResponse>('/check-folder')
-  //   if (folderStatus.success) {
-  //     const response = await getRequest<CalculationResponse>('/totals')
-  //     console.log(response)
-  //     if (response.success) {
-  //       onStartCalculation()
-  //       toast.success('Calculation completed successfully.')
-  //     } else {
-  //       toast.error(response.message || 'Failed to start calculation.')
-  //     }
-  //   } else {
-  //     toast.error('Upload folder is empty. Please upload files and try again.')
-  //   }
-  //   setLoading(false)
-  // }
 
   return (
     <div className="file-upload">
