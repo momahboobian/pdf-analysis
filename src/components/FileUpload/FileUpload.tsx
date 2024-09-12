@@ -1,8 +1,8 @@
 import React from 'react'
 import { toast } from 'react-toastify'
 
-import { FileUploadProps, CheckFolderResponse, UploadResponse } from '../../types'
-import { getRequest, postRequest } from '../../services/api'
+import { FileUploadProps } from '../../types'
+import { postRequest } from '../../services/api'
 
 import Button from '../ui/Button/Button'
 import { Icons } from '../ui/Icons/Icons'
@@ -11,17 +11,14 @@ import './FileUpload.scss'
 const FileUpload: React.FC<FileUploadProps> = ({
   files,
   setFiles,
+  folderName,
   loading,
   setLoading,
   uploadCompleted,
   setUploadCompleted,
   onStartCalculation,
+  onFileChange,
 }) => {
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(e.target.files || [])
-    setFiles(selectedFiles)
-  }
-
   const handleUpload = async () => {
     if (files.length === 0) {
       toast.error('Please select a file to upload.')
@@ -29,63 +26,31 @@ const FileUpload: React.FC<FileUploadProps> = ({
     }
 
     setLoading(true)
-    const folderStatus = await getRequest<CheckFolderResponse>('/check-folder')
-    if (folderStatus.success && folderStatus.data?.folder_empty) {
-      const formData = new FormData()
-      files.forEach(file => formData.append('files[]', file))
+    const formData = new FormData()
+    files.forEach(file => formData.append('files[]', file))
+    formData.append('folder', folderName)
 
-      const uploadResponse = await postRequest('/upload', formData)
-      if (uploadResponse.success) {
-        toast.success('All files uploaded successfully.')
-        setFiles([])
-        setUploadCompleted(true)
-      } else {
-        toast.error(uploadResponse.message || 'File upload failed.')
-      }
+    setLoading(true)
+    const uploadResponse = await postRequest('/upload', formData)
+    if (uploadResponse.success) {
+      toast.success('All files uploaded successfully.')
+      setFiles([])
+      setUploadCompleted(true)
     } else {
-      toast.error('Upload folder is not empty. Please clear the folder and try again.')
+      toast.error(uploadResponse.message || 'File upload failed.')
     }
+
     setLoading(false)
   }
 
   const handleChooseFiles = async () => {
-    const response = await postRequest<UploadResponse>('/empty', {})
-    if (response.success) {
-      toast.success('Folder cleared successfully.')
-      setFiles([])
-      setUploadCompleted(false)
-    } else {
-      toast.error(response.message || 'Failed to clear folder.')
-    }
+    setFiles([])
+    setUploadCompleted(false)
     setLoading(false)
     setTimeout(() => {
       document.getElementById('file-upload')?.click()
     }, 500)
   }
-
-  // const handleStartCalculation = async () => {
-  //   if (!uploadCompleted) {
-  //     toast.error('Please complete the file upload before starting the calculation.')
-  //     return
-  //   }
-
-  //   setLoading(true)
-  //   toast.info('Calculation started, please wait ...')
-  //   const folderStatus = await getRequest<CheckFolderResponse>('/check-folder')
-  //   if (folderStatus.success) {
-  //     const response = await getRequest<CalculationResponse>('/totals')
-  //     console.log(response)
-  //     if (response.success) {
-  //       onStartCalculation()
-  //       toast.success('Calculation completed successfully.')
-  //     } else {
-  //       toast.error(response.message || 'Failed to start calculation.')
-  //     }
-  //   } else {
-  //     toast.error('Upload folder is empty. Please upload files and try again.')
-  //   }
-  //   setLoading(false)
-  // }
 
   return (
     <div className="file-upload">
@@ -95,7 +60,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
           type="file"
           id="file-upload"
           className="file-upload__input"
-          onChange={handleFileChange}
+          onChange={onFileChange}
           multiple
         />
         <Button
