@@ -3,13 +3,11 @@ import { useLocation } from 'react-router-dom'
 
 import Header from '../Header/Header'
 import InfoBar from '../InfoBar/InfoBar'
+
+import { LandingPageProps } from '../../types'
 import './Landing.scss'
 
-interface LandingProps {
-  children: React.ReactNode
-}
-
-const Landing: React.FC<LandingProps> = ({ children }) => {
+const Landing: React.FC<LandingPageProps> = ({ children }) => {
   const location = useLocation()
   return (
     <div className="landing">

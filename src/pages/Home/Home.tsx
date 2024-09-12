@@ -17,13 +17,6 @@ const Home: React.FC = () => {
   const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null)
   const [socketData, setSocketData] = useState<SocketData | null>(null)
 
-  console.log('files:', files)
-  console.log('loading:', loading)
-  console.log('folderName:', folderName)
-  console.log('uploadCompleted:', uploadCompleted)
-  console.log('invoiceData:', invoiceData)
-  console.log('socketData:', socketData)
-
   useEffect(() => {
     socket.on('connect', () => {
       console.log('Socket connected:', socket.id)
