@@ -8,63 +8,67 @@ import InvoiceTable from '../InvoiceTable/InvoiceTable'
 const InvoiceSection: React.FC<InvoiceSectionProps> = ({ invoiceData, loading, socketData }) => {
   const [selectedTab, setSelectedTab] = React.useState<string>('GRAND TOTAL')
 
-  console.log('Socket Data:', socketData)
-
   const handleTabClick = (tab: string) => {
     setSelectedTab(tab)
   }
 
-  const grandTotalRows = invoiceData
+  // Defensive check for grand totals
+  const grandTotalRows = invoiceData?.grand_totals?.grand_totals
     ? Object.entries(invoiceData.grand_totals.grand_totals).map(([site, total]) => ({
         site,
         total,
       }))
     : []
 
-  const siteTotalRows =
-    invoiceData && selectedTab !== 'GRAND TOTAL' && invoiceData.site_totals[selectedTab]
-      ? Object.entries(invoiceData.site_totals[selectedTab].site_totals).map(([site, total]) => ({
-          site,
-          total,
-        }))
-      : []
+  // Defensive check for site totals
+  const siteTotalRows = invoiceData?.site_totals?.[selectedTab]?.sites_totals
+    ? Object.entries(invoiceData.site_totals[selectedTab].sites_totals).map(([site, total]) => ({
+        site,
+        total,
+      }))
+    : []
 
   const renderTable = () => {
-    if (invoiceData) {
-      if (selectedTab === 'GRAND TOTAL') {
-        return (
-          <>
-            <div className="invoice-section__details">
-              <p>Grand Total</p>
-            </div>
+    if (!invoiceData) return null
 
-            <InvoiceTable
-              headers={['Site Name', 'Total']}
-              rows={grandTotalRows}
-              footer={{
-                'Overall Grand Total': invoiceData.grand_totals.total_of_grand_totals,
-              }}
-            />
-          </>
-        )
-      } else if (invoiceData.site_totals[selectedTab]) {
-        return (
-          <>
-            <div className="invoice-section__details">
-              <p>Payment Date: {invoiceData.site_totals[selectedTab].invoice.payment_date}</p>
-              <p>Transaction ID: {invoiceData.site_totals[selectedTab].invoice.transaction_id}</p>
-            </div>
-            <InvoiceTable
-              headers={['Site Name', 'Total']}
-              rows={siteTotalRows}
-              footer={{
-                Total: invoiceData.site_totals[selectedTab].total,
-              }}
-            />
-          </>
-        )
-      }
+    if (selectedTab === 'GRAND TOTAL') {
+      return (
+        <>
+          <div className="invoice-section__details">
+            <p>Grand Total</p>
+          </div>
+          <InvoiceTable
+            headers={['Site Name', 'Total']}
+            rows={grandTotalRows}
+            footer={{
+              'Overall Grand Total': invoiceData.grand_totals.total_of_grand_totals,
+            }}
+          />
+        </>
+      )
+    } else if (invoiceData.site_totals?.[selectedTab]) {
+      return (
+        <>
+          <div className="invoice-section__details">
+            <p>
+              Payment Date: {invoiceData.site_totals[selectedTab]?.invoice?.payment_date ?? 'N/A'}
+            </p>
+            <p>
+              Transaction ID:{' '}
+              {invoiceData.site_totals[selectedTab]?.invoice?.transaction_id ?? 'N/A'}
+            </p>
+          </div>
+          <InvoiceTable
+            headers={['Site Name', 'Total']}
+            rows={siteTotalRows}
+            footer={{
+              Total: invoiceData.site_totals[selectedTab]?.total ?? 'N/A',
+            }}
+          />
+        </>
+      )
     }
+
     return null
   }
 
@@ -77,7 +81,6 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({ invoiceData, loading, s
             title="Grand Total"
             onClick={() => handleTabClick('GRAND TOTAL')}
           />
-          <p>Progress: {socketData?.progress}</p>
           {invoiceData &&
             Object.keys(invoiceData.site_totals).map((invoice, index) => {
               const siteTotal = invoiceData.site_totals[invoice]
@@ -94,9 +97,18 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({ invoiceData, loading, s
             })}
         </div>
       </div>
-      <div className="invoice-section__separator" />
-      {loading && <div className="invoice-section__loading">Loading...</div>}
-      <div className="invoice-section__content">{renderTable()}</div>
+      <div className="invoice-section__separator"></div>
+      {loading ? (
+        <div className="invoice-section__progress">
+          <div
+            className="invoice-section__progress-bar"
+            style={{ width: `${socketData?.progress ?? 0}%` }}
+          />
+          <p>Progress: {socketData?.progress}%</p>
+        </div>
+      ) : (
+        <div className="invoice-section__content">{renderTable()}</div>
+      )}
     </div>
   )
 }
