@@ -3,7 +3,7 @@ import { toast } from 'react-toastify'
 import socket from '../../utils/socket'
 
 import { getRequest } from '../../services/api'
-import { CheckFolderResponse, CalculationResponse, SocketData } from '../../types'
+import { InvoiceData, SocketData } from '../../types'
 
 import InvoiceSection from '../../components/InvoiceSection/InvoiceSection'
 import FileUpload from '../../components/FileUpload/FileUpload'
@@ -14,8 +14,15 @@ const Home: React.FC = () => {
   const [folderName, setFolderName] = React.useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
   const [uploadCompleted, setUploadCompleted] = useState<boolean>(false)
-  const [invoiceData, setInvoiceData] = useState<CalculationResponse | null>(null)
+  const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null)
   const [socketData, setSocketData] = useState<SocketData | null>(null)
+
+  console.log('files:', files)
+  console.log('loading:', loading)
+  console.log('folderName:', folderName)
+  console.log('uploadCompleted:', uploadCompleted)
+  console.log('invoiceData:', invoiceData)
+  console.log('socketData:', socketData)
 
   useEffect(() => {
     socket.on('connect', () => {
@@ -47,15 +54,11 @@ const Home: React.FC = () => {
     setLoading(true)
     toast.info('Calculation started, please wait ...')
 
-    const folderStatus = await getRequest<CheckFolderResponse>(
-      `/totals?folder_name=${encodeURIComponent(folderName)}`
-    )
+    const folderStatus = await getRequest(`/totals?folder_name=${encodeURIComponent(folderName)}`)
     if (folderStatus.success) {
-      const response = await getRequest<CalculationResponse>(
-        `/totals?folder_name=${encodeURIComponent(folderName)}`
-      )
+      const response = await getRequest(`/totals?folder_name=${encodeURIComponent(folderName)}`)
       if (response.success && response.data) {
-        setInvoiceData(response.data)
+        setInvoiceData(response.data as InvoiceData)
         toast.success('Calculation completed successfully.')
       } else {
         setInvoiceData(null)
