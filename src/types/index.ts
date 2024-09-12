@@ -1,10 +1,14 @@
 export interface ButtonProps {
-  key?: string
+  key?: number
   icon?: React.ReactNode
   title: string
   color?: string
   disabled?: boolean
   onClick?: () => void
+}
+
+export interface LandingPageProps {
+  children: React.ReactNode
 }
 
 export interface FileUploadProps {
@@ -30,7 +34,7 @@ export interface SiteTotals {
 
 export interface FileData {
   invoice: Invoice
-  site_totals: SiteTotals
+  sites_totals: SiteTotals
   total: number
 }
 
@@ -47,7 +51,7 @@ export interface ResponseData {
 }
 
 export interface SocketData {
-  file: string
+  file: any
   invoice: Invoice
   site_totals: SiteTotals
   total: number
@@ -73,9 +77,24 @@ export interface InvoiceData {
 }
 
 export interface InvoiceSectionProps {
-  invoiceData: InvoiceData | null
+  invoiceData: ResponseData | null
   loading: boolean
   socketData: SocketData | null
+}
+
+export interface InvoiceTableProps {
+  headers: string[]
+  rows: { [key: string]: React.ReactNode }[]
+  footer?: { [key: string]: React.ReactNode }
+}
+
+export interface SiteTotal {
+  invoice: {
+    payment_date: string
+    transaction_id: string
+  }
+  site_totals: InvoiceData
+  total: string
 }
 
 // ad;gifj;agjia'dgjd;fgojds;fgk
@@ -93,15 +112,6 @@ export interface InvoiceSectionProps {
 // export interface InvoiceData {
 //   grand_totals: GrandTotals
 //   site_totals: SiteTotalsData
-// }
-
-// export interface SiteTotal {
-//   invoice: {
-//     payment_date: string
-//     transaction_id: string
-//   }
-//   site_totals: InvoiceData
-//   total: string
 // }
 
 // export interface CalculationResponse {
@@ -124,10 +134,4 @@ export interface InvoiceSectionProps {
 
 // export interface UploadResponse {
 //   message: string
-// }
-
-// export interface InvoiceTableProps {
-//   headers: string[]
-//   rows: { [key: string]: React.ReactNode }[]
-//   footer?: { [key: string]: React.ReactNode }
 // }
