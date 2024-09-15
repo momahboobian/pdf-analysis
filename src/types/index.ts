@@ -51,7 +51,7 @@ export interface ResponseData {
 }
 
 export interface SocketData {
-  file: any
+  file: File
   invoice: Invoice
   site_totals: SiteTotals
   total: number
@@ -73,11 +73,11 @@ export interface Response {
 }
 
 export interface InvoiceData {
-  [key: string]: number | string
+  [key: string]: number | string | any
 }
 
 export interface InvoiceSectionProps {
-  invoiceData: ResponseData | null
+  invoiceData: InvoiceData | null
   loading: boolean
   socketData: SocketData | null
 }
@@ -95,6 +95,12 @@ export interface SiteTotal {
   }
   site_totals: InvoiceData
   total: string
+}
+
+export interface ApiResponse<T = string | number> {
+  success: boolean
+  data?: T
+  message?: string
 }
 
 // ad;gifj;agjia'dgjd;fgojds;fgk
@@ -119,13 +125,6 @@ export interface SiteTotal {
 //   site_totals: {
 //     [invoiceKey: string]: SiteTotal
 //   }
-// }
-
-// ;dgijsdf;gjdsfg;dsfjigdsf;lgjidfs;gofdijgdf
-// export interface ApiResponse<T> {
-//   success: boolean
-//   data: T | undefined
-//   message?: string
 // }
 
 // export interface CheckFolderResponse {
