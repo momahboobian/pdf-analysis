@@ -16,7 +16,7 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({ invoiceData, loading, s
   const grandTotalRows = invoiceData?.grand_totals?.grand_totals
     ? Object.entries(invoiceData.grand_totals.grand_totals).map(([site, total]) => ({
         site,
-        total,
+        total: String(total),
       }))
     : []
 
@@ -24,7 +24,7 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({ invoiceData, loading, s
   const siteTotalRows = invoiceData?.site_totals?.[selectedTab]?.sites_totals
     ? Object.entries(invoiceData.site_totals[selectedTab].sites_totals).map(([site, total]) => ({
         site,
-        total,
+        total: String(total),
       }))
     : []
 

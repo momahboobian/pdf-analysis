@@ -73,11 +73,11 @@ export interface Response {
 }
 
 export interface InvoiceData {
-  [key: string]: number | string
+  [key: string]: number | string | any
 }
 
 export interface InvoiceSectionProps {
-  invoiceData: ResponseData | null
+  invoiceData: InvoiceData | null
   loading: boolean
   socketData: SocketData | null
 }

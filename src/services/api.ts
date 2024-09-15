@@ -16,7 +16,7 @@ export const api = async <T>(
 ): Promise<ApiResponse<T>> => {
   try {
     const response = await axios({
-      url: `https://pdf-analysis.moreel.me/api${endpoint}`,
+      url: `http://127.0.0.1:5000/api${endpoint}`,
       method,
       data: payload,
       headers: {
