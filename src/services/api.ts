@@ -1,22 +1,17 @@
 import axios from 'axios'
 import { toast } from 'react-toastify'
-
-export interface ApiResponse<T = any> {
-  success: boolean
-  data?: T
-  message?: string
-}
+import { ApiResponse } from '../types'
 
 // Generic API handler
 export const api = async <T>(
   endpoint: string,
   method: 'GET' | 'POST',
-  payload?: any,
+  payload?: string | number | object,
   headers?: Record<string, string>
 ): Promise<ApiResponse<T>> => {
   try {
     const response = await axios({
-      url: `http://127.0.0.1:5000/api${endpoint}`,
+      url: `https://pdf-analysis.moreel.me/api/${endpoint}`,
       method,
       data: payload,
       headers: {
@@ -37,7 +32,7 @@ export const api = async <T>(
   }
 }
 
-const handleApiError = (error: unknown): ApiResponse => {
+const handleApiError = <T>(error: unknown): ApiResponse<T> => {
   if (axios.isAxiosError(error)) {
     const message = error.response?.data?.error || 'Error communicating with the server'
     toast.error(message)
@@ -60,7 +55,7 @@ export const getRequest = async <T>(endpoint: string): Promise<ApiResponse<T>> =
 }
 
 // Wrapper for POST requests
-export const postRequest = async <T>(endpoint: string, data: any): Promise<ApiResponse<T>> => {
+export const postRequest = async <T>(endpoint: string, data: object): Promise<ApiResponse<T>> => {
   try {
     return await api<T>(endpoint, 'POST', data)
   } catch (error) {
