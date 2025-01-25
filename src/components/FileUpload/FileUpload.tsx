@@ -23,10 +23,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
   const [uploadProgress, setUploadProgress] = useState<{
     [key: string]: number;
   }>({});
-  const [fileList, setFileList] = useState([]);
-  const [progress, setProgress] = useState<{
-    [key: string]: number;
-  }>({});
+  // const [fileList, setFileList] = useState([]);
+  // const [progress, setProgress] = useState<{
+  //   [key: string]: number;
+  // }>({});
 
   useEffect(() => {
     socket.on("upload_started", (data) => {
@@ -40,15 +40,15 @@ const FileUpload: React.FC<FileUploadProps> = ({
     socket.on("upload_complete", (data) => {
       console.log("Upload complete", data);
     });
-    // socket.on(
-    //   "file_upload_progress",
-    //   (data: { file_name: string; progress: number }) => {
-    //     setUploadProgress((prev) => ({
-    //       ...prev,
-    //       [data.file_name]: data.progress,
-    //     }));
-    //   }
-    // );
+    socket.on(
+      "file_upload_progress",
+      (data: { file_name: string; progress: number }) => {
+        setUploadProgress((prev) => ({
+          ...prev,
+          [data.file_name]: data.progress,
+        }));
+      }
+    );
 
     return () => {
       socket.off("file_upload_progress");
